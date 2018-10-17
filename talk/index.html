@@ -1,0 +1,671 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>REST is Dead, Long Live GraphQL</title>
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ?
+        'css/print/pdf.css' :
+        'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>REST is Dead<br />Long Live GraphQL</h1>
+        </section>
+
+        <section>
+          <h2>Whoami</h2>
+          <!--TODO About me, Juristat using Graphql, etc-->
+        </section>
+
+        <section>
+          <section>
+            <h2>What is GraphQL?</h2>
+
+            <aside class="notes">
+              <ul>
+                <li>An alternative system for requesting data from an API</li>
+                <li>Most commonly used over HTTP/S</li>
+                <li>Is transport independent</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <pre>POST - https://data.api/graphql</pre>
+            <pre><code data-trim>
+              {
+                "query": "
+                  query GetPlanet($id:ID) {
+                    planet(id:$id) {
+                      name
+                      terrains
+                    }
+                  }
+                ",
+                "variables": { "id": "cGxhbmV0czox" }
+              }
+            </pre></code>
+
+            <aside class="notes">
+              <ul>
+                <li>Most common use is via POST request</li>
+              </ul>
+            </aside>
+          </section>
+          
+          <section>
+            <pre><code data-trim>
+              GET - https://graphql.github.io/swapi-graphql/?
+              query=query%20GetPlanet(%24id%3AID)%20%7B%0A%20%20
+              planet(id%3A%24id)%20%7B%0A%20%20%20%20name%0A%20
+              %20%20%20terrains%0A%20%20%7D%0A%7D&operationName
+              =GetPlanet&variables=%7B%20%22id%22%3A%20%22cGxhbm
+              V0czox%22%20%7D
+            </code></pre>
+
+            <aside class="notes">
+              <ul>
+                <li>Can also be used via GET request</li>
+              </ul>
+            </aside>
+          </section>
+          
+          <section>
+            <pre><code data-trim>
+              {
+                "data": {
+                  "planet": {
+                    "name": "Tatooine",
+                    "terrains": [
+                      "desert"
+                    ]
+                  }
+                }
+              }
+            </code></pre>
+
+            <aside class="notes">
+              <ul>
+                <li>Responses are always via JSON</li>
+              </ul>
+            </aside>
+          </section>
+          
+          <section>
+            <pre class="fragment"><code>query GetPlanet($id:ID) {</code></pre>
+            <pre class="fragment"><code>  planet(id:$id) {</code></pre>
+            <pre class="fragment"><code>    name</code></pre>
+            <pre class="fragment"><code>    terrains</code></pre>
+            <pre class="fragment"><code>  }</code></pre>
+            <pre class="fragment"><code>}</code></pre>
+
+            <aside class="notes">
+              <ul>
+                <li>Here's the basic structure of a GraphQL operation</li>
+                <li>The first part is the operation, an optional name, and any required variables</li>
+                <li>Next you will get a list of fields you want to fetch, in this case planet</li>
+                <li>Sometimes, fields will accept arguments</li>
+                <li>If a field is an object, then you will need to specify the sub fields</li>
+              </ul>
+            </aside>
+          </section>
+          
+          <section>
+            TODO - Who's using it
+          </section>
+        </section>
+
+        <section>
+          <h1>Fuck REST</h1>
+          <span>
+            An extremely biased guide on why you should stop writing REST APIs and start writing GraphQL
+          </span>
+        </section>
+
+        <section>
+          <h2>Why does REST suck?</h2>
+          <img width="50%" src="img/meme-why-does-rest-suck.jpg" />
+        </section>
+
+        <!--Introspection-->
+        <section>
+          <section>
+            <h2>Introspection</h2>
+            <img width="50%" src="img/no-introspection.gif" />
+            <aside class="notes">
+              <ul>
+                <li>Introspection is the ability to get information about the API, what it supports, etc.</li>
+                <li>This is differnt from documentation, which requires the developer to do something separate.</li>
+                <li>Introspection allows a user to get information about an API even if the developer hasn't added any documentation</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Introspection - REST Sucks</h3>
+            <img style="max-height: 75vh" src="img/meme-rest-no-introspection.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>There is no introspection on REST.  Hopefully you've got docs, because if you don't there's no way to figure out what's going on.</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Introspection - GraphQL is Better</h3>
+            <img style="max-height: 75vh" src="img/graphql-has-introspection.gif" />
+            <aside class="notes">
+              <ul>
+                <li>GraphQL natively supports introspection</li>
+                <li>It's possible to query the API about all the available fields, args, types, etc.</li>
+                <li>This allows for easy to use tools like GraphiQL which can auto-complete queries as you type</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code data-trim data-noescape>
+              query {
+                __schema {
+                  queryType {
+                    name
+                    description
+                    fields {
+                      kame
+                      type {
+                        name
+                        description
+                      }
+                    }
+                  }
+                }
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              {
+                "data": {
+                  "__schema": {
+                    "queryType": {
+                      "name": "Root",
+                      "description": null,
+                      "fields": [
+                        {
+                          "name": "allFilms",
+                          "type": {
+                            "name": "FilmsConnection",
+                            "description": "A connection to a list of items."
+                          }
+                        },
+                        {
+                          "name": "film",
+                          "type": {
+                            "name": "Film",
+                            "description": "A single film."
+                          }
+                        },
+                        {
+                          "name": "allPeople",
+                          "type": {
+                            "name": "PeopleConnection",
+                            "description": "A connection to a list of items."
+                          }
+                        },
+                      ]
+                    }
+                  }
+                }
+              }
+            </code></pre>
+          </section>
+        </section>
+
+        <!--Predictability-->
+        <section>
+          <section>
+            <h2>Predictability</h2>
+            <img width="50%" src="img/wild-card.gif" />
+            <aside class="notes">
+              <ul>
+                <li>What is the API going to return</li>
+                <li>How is the data formatted</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Predictability - REST Sucks</h3>
+            <img style="max-height: 75vh" src="img/meme-rest-predictable.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>With a REST API, you have to try things out, or look at the docs to find out what the response will look like</li>
+                <li>Errors aren't defined either, sometimes you'll get a 500 with an empty body, sometimes a stack trace</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Predictability - GraphQL is Better</h3>
+            <img style="max-height: 75vh" src="img/meme-graphql-predictable.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>With GraphQL if a field is an integer, you know you'll always get an integer</li>
+                <li>Objects, lits, etc, are all defined, and produce the expected output every time</li>
+                <li>Errors are even defined as part of the response</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+                query {
+                  film(id:"cGVvcGxlOjE=") {
+                    title
+                    director
+                  }
+                }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+                {
+                  "data": {
+                    "film": {
+                      "title": "A New Hope",
+                      "director": "George Lucas"
+                    }
+                  }
+                }
+            </code></pre>
+          </section>
+        </section>
+
+        <!--Errors-->
+        <section>
+          <section>
+            <h2>Errors</h2>
+            <img width="50%" src="img/gif-errors.gif" />
+            <aside class="notes">
+              <ul>
+                <li>How does the API behave when something goes wrong</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Errors - REST Sucks</h3>
+            <img style="max-height: 75vh" src="img/meme-rest-errors.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>No standardization exept HTTP codes, which are open to interpretation</li>
+                <li>No information on what exectly caused the error, unless the developer added it</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Errors - GraphQL is Better</h3>
+            <img style="max-height: 75vh" src="img/meme-graphql-errors.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>Errors are scoped to the exact field which caused a problem</li>
+                <li>The API can provide details about why a specific value caused a problem, instead of just failing</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+                query {
+                  film(id:"cGVvcGxlOjE=") {
+                    title
+                    director
+                  }
+
+                  tragedyOfDarthPlagueis {
+                    theStory
+                  }
+                }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              {
+                "data": {
+                  "film": {
+                    "title": "A New Hope",
+                    "director": "George Lucas"
+                  },
+                  "tragedyOfDarthPlagueis": null,
+                },
+                "errors": [
+                  {
+                    "path": [ "tragedyOfDarthPlagueis" ],
+                    "message": "Not a story the Jedi would tell you"
+                  }
+                ]
+              }
+            </code></pre>
+          </section>
+        </section>
+
+        <!--Docs-->
+        <section>
+          <section>
+            <h2>Docs</h2>
+            <img width="50%" src="img/gif-docs.gif" />
+            <aside class="notes">
+              <ul>
+                <li>How do you find out how to use an API?</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Docs - REST Sucks</h3>
+            <img style="max-height: 75vh" src="img/meme-rest-docs.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>No standard way to provide docs</ul>
+                <li>If there are docs, they're separate from the API</ul>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Docs - GraphQL is Better</h3>
+            <img style="max-height: 75vh" src="img/meme-graphql-docs.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>The developer still has to write docs, but they're built in</li>
+                <li>Every field, type, argument can have a description</li>
+                <li>Often the API is self-documenting via introspection</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <img src="img/graphiql-docs.png" />
+          </section>
+        </section>
+
+        <!--Specificity-->
+        <section>
+          <section>
+            <h2>Specificity</h2>
+            <img width="50%" src="img/gif-specificity.gif" />
+            <aside class="notes">
+              <ul>
+                <li>Can you tell the API exactly what you want and get back what you need?</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Specificity - REST Sucks</h3>
+            <img style="max-height: 75vh" src="img/meme-data-rest.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>Here's all the information in the world, or only one tiny piece, either way fuck you</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              <code data-trim data-noescape>
+                https://swapi.co/api/people/1/
+              </code>
+            </pre></code>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              {
+                "name": "Luke Skywalker",
+                "height": "172",
+                "mass": "77",
+                "hair_color": "blond",
+                "skin_color": "fair",
+                "eye_color": "blue",
+                "birth_year": "19BBY",
+                "gender": "male",
+                "homeworld": "https://swapi.co/api/planets/1/",
+                "films": [
+                  "https://swapi.co/api/films/2/",
+                  "https://swapi.co/api/films/6/",
+                  "https://swapi.co/api/films/3/",
+                  "https://swapi.co/api/films/1/",
+                  "https://swapi.co/api/films/7/"
+                ],
+                "species": [
+                  "https://swapi.co/api/species/1/"
+                ],
+                "vehicles": [
+                  "https://swapi.co/api/vehicles/14/",
+                  "https://swapi.co/api/vehicles/30/"
+                ],
+                "starships": [
+                  "https://swapi.co/api/starships/12/",
+                  "https://swapi.co/api/starships/22/"
+                ],
+                "created": "2014-12-09T13:50:51.644000Z",
+                "edited": "2014-12-20T21:17:56.891000Z",
+                "url": "https://swapi.co/api/people/1/"
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Specificity - GraphQL is Better</h3>
+            <img style="max-height: 75vh" src="img/meme-data-graphql.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>Only get back exctly what you asked for</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              query {
+                person(id:"cGVvcGxlOjE=") {
+                  name
+                }
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              {
+                "data": {
+                  "person": {
+                    "name": "Luke Skywalker"
+                  }
+                }
+              }
+            </code></pre>
+          </section>
+        </section>
+
+        <!--Timelyness-->
+        <section>
+          <section>
+            <h2>Timelyness</h2>
+            <img width="50%" src="img/gif-timlyness.gif" />
+            <aside class="notes">
+              <ul>
+                <li>How do you provide data over time, when you can't return instantly, or a user might want new info down the road.</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h3>Timelyness - REST Sucks</h3>
+            <img style="max-height: 75vh" src="img/gif-timelyness-rest.gif" />
+            <aside class="notes">
+              <ul>
+                <li>Polling, long of otherwise, DIY with websockets</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              POST https://service.api/my-stuff - 202
+              GET https://service.api/my-stuff - 404
+              GET https://service.api/my-stuff - 404
+              GET https://service.api/my-stuff - 404
+              GET https://service.api/my-stuff - 404
+              GET https://service.api/my-stuff - 404
+              GET https://service.api/my-stuff - 200 - Here it is
+            </code></pre>
+          </section>
+
+          <section>
+            <h3>Timelyness - GraphQL is Better</h3>
+            <img style="max-height: 75vh" src="img/meme-timelyness-graphql.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>Subscriptions</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              subscription {
+                update { type message }
+              }
+            </code></pre>
+          </section>
+        </section>
+
+        <!--Updates-->
+        <section>
+          <section>
+            <h2>Updates</h2>
+            <img width="50%" src="img/gif-updates.gif" />
+            <aside class="notes">
+              <ul>
+                <li>As your API changes, how does that get communicated to the user, how do you avoid breaking things</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h2>Updates - REST Sucks</h2>
+            <img width="50%" src="img/meme-updates-rest.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>No defined system for updtes</li>
+                <li>No good way to predict how your changes will affect clients</li>
+                <li>Versioned APIs</li>
+              </ul>
+            </aside>
+          </section>
+
+          <section>
+            <h2>Updates - GraphQL is Better</h2>
+            <img width="50%" src="img/meme-updates-graphql.jpg" />
+            <aside class="notes">
+              <ul>
+                <li>If you add fields, it's totally backwards compatible</li>
+                <li>You have to be a little careful</li>
+              </ul>
+            </aside>
+          </section>
+        </section>
+
+        <section>
+          <h2>Okay, you're convinced.</h2>
+          <img width="50%" src="img/convinced.gif" />
+        </section>
+
+        <section>
+          <h2>How to get started?</h2>
+          <img width="50%" src="img/getting-started.gif" />
+        </section>
+
+        <section>
+          <section>
+            <h2>Clients</h2>
+          </section>
+
+          <section>
+            <h2>GraphiQL / GraphQL Playground</h2>
+          </section>
+
+          <section>
+            <h2>Plain HTTP/S Calls</h2>
+          </section>
+
+          <section>
+            <h2>Relay</h2>
+          </section>
+
+          <section>
+            <h2>Apollo</h2>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Servers</h2>
+          </section>
+
+          <section>
+            <h2>Node.js</h2>
+          </section>
+
+          <section>
+            <h2>Apollo</h2>
+          </section>
+        </section>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+      Reveal.initialize({
+        dependencies: [
+          { src: 'plugin/markdown/marked.js' },
+          { src: 'plugin/markdown/markdown.js' },
+          { src: 'plugin/notes/notes.js', async: true },
+          {
+            src: 'plugin/highlight/highlight.js',
+            async: true,
+            callback: function() { hljs.initHighlightingOnLoad(); }
+          }
+        ]
+      });
+
+      Reveal.configure({ slideNumber: 'c/t' });
+    </script>
+  </body>
+</html>
