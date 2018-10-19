@@ -12,6 +12,8 @@
     <!-- Theme used for syntax highlighting of code -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous"> 
+
     <!-- Printing and PDF exports -->
     <script>
       var link = document.createElement( 'link' );
@@ -28,22 +30,108 @@
       <div class="slides">
         <section>
           <h1>REST is Dead<br />Long Live GraphQL</h1>
+          <a href="https://twitter.com/rtward"><i class="fab fa-twitter-square"></i> @rtward</a>
+          <br />
+          <a href="https://github.com/rtward"><i class="fab fa-github-square"></i> github.com/rtward</a>
+          <br />
+          <a href="https://github.com/rtward/GraphQL-Talk">github.com/rtward/GraphQL-Talk</a>
+          <br />
+          <a href="https://github.com/chentsulin/awesome-graphql#databases">github.com/chentsulin/awesome-graphql</a>
         </section>
 
         <section>
-          <h2>Whoami</h2>
-          <!--TODO About me, Juristat using Graphql, etc-->
+          <h2>whoami</h2>
+
+          <ul>
+            <li class="fragment">Founder / CTO at Juristat</li>
+            <li class="fragment">Founding memeber of Arch Reactor Hackerspace</li>
+            <li class="fragment">Co-organizer of the STL2600 / DC314 meetup</li>
+            <li class="fragment">Gave a talk last year called Going Commando</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Why am I talking to you?</h2>
+
+          <ul>
+            <li class="fragment">REST is Terrible</li>
+            <li class="fragment">GraphQL is Better</li>
+          </ul>
+
+          <aside class="notes">
+            <ul>
+              <li>I'm going to convince you to switch to GraphQL</li>
+            </ul>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Why should you listen to me?</h2>
+
+          <ul>
+            <li class="fragment">Juristat runs on GraphQL</li>
+            <li class="fragment">Multi-database API</li>
+            <li class="fragment">Very complex data</li>
+          </ul>
+
+          <aside class="notes">
+            <ul>
+              <li>The single API combines and provides data from several different databases and data stores</li>
+              <li>Our data model is very complex</li>
+              <li>Used to power the best patent search tool in the business</li>
+            </ul>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Examples</h2>
+          <h3 class="fragment">Star Wars API</h3>
+          <ul>
+            <li class="fragment">REST - https://swapi.co/api</li>
+            <li class="fragment">GraphQL - https://graphql.org/swapi-graphql/</li>
+          </ul>
+
+          <aside class="notes">
+            <ul>
+              <li>During this talk, you'll see me frequently use examples from the Star Wars API, both the REST and GraphQL versions</li>
+            </ul>
+          </aside>
         </section>
 
         <section>
           <section>
             <h2>What is GraphQL?</h2>
 
+            <ul>
+              <li class="fragment">Graph Query Language</li>
+              <li class="fragment">A system for requesting data from an API</li>
+              <li class="fragment">Transport independent</li>
+              <li class="fragment">Most commonly used over HTTP/S</li>
+            </ul>
+          </section>
+ 
+          <section>
+            <h2>Anatomy of a GraphQL Query</h2>
+
+            <pre class="fragment"><code>query GetPlanet($idOne:ID $idTwo:ID) {</code></pre>
+            <pre class="fragment"><code>  planet(id:$idOne) {</code></pre>
+            <pre class="fragment"><code>    name</code></pre>
+            <pre class="fragment"><code>    terrains</code></pre>
+            <pre class="fragment"><code>  }</code></pre>
+            <pre class="fragment"><code>  planetTwo: planet(id:$idTwo) {</code></pre>
+            <pre class="fragment"><code>    name</code></pre>
+            <pre class="fragment"><code>    terrains</code></pre>
+            <pre class="fragment"><code>  }</code></pre>
+            <pre class="fragment"><code>}</code></pre>
+
             <aside class="notes">
               <ul>
-                <li>An alternative system for requesting data from an API</li>
-                <li>Most commonly used over HTTP/S</li>
-                <li>Is transport independent</li>
+                <li>Here's the basic structure of a GraphQL operation</li>
+                <li>The first part is the operation, an optional name, and any required variables</li>
+                <li>Next you will get a list of fields you want to fetch, in this case planet</li>
+                <li>Sometimes, fields will accept arguments</li>
+                <li>If a field is an object, then you will need to specify the sub fields</li>
+                <li>If you need to request the same field different times, you can make custom lbels</li>
               </ul>
             </aside>
           </section>
@@ -108,36 +196,24 @@
               </ul>
             </aside>
           </section>
-          
-          <section>
-            <pre class="fragment"><code>query GetPlanet($id:ID) {</code></pre>
-            <pre class="fragment"><code>  planet(id:$id) {</code></pre>
-            <pre class="fragment"><code>    name</code></pre>
-            <pre class="fragment"><code>    terrains</code></pre>
-            <pre class="fragment"><code>  }</code></pre>
-            <pre class="fragment"><code>}</code></pre>
-
-            <aside class="notes">
-              <ul>
-                <li>Here's the basic structure of a GraphQL operation</li>
-                <li>The first part is the operation, an optional name, and any required variables</li>
-                <li>Next you will get a list of fields you want to fetch, in this case planet</li>
-                <li>Sometimes, fields will accept arguments</li>
-                <li>If a field is an object, then you will need to specify the sub fields</li>
-              </ul>
-            </aside>
-          </section>
-          
-          <section>
-            TODO - Who's using it
-          </section>
         </section>
 
         <section>
-          <h1>Fuck REST</h1>
-          <span>
-            An extremely biased guide on why you should stop writing REST APIs and start writing GraphQL
-          </span>
+          <h2>Who's using it?</h2>
+          <ul>
+            <li class="fragment">Facebook</li>
+            <li class="fragment">GitHub</li>
+            <li class="fragment">Pintrest</li>
+            <li class="fragment">Coursera</li>
+            <li class="fragment">The New York Times</li>
+            <li class="fragment">Juristat</li>
+          </ul>
+          <aside class="notes">
+            <ul>
+              <li>Facebook was the creator of Graphql</li>
+              <li>GitHub was an early enthusiastic adoter</li>
+            </ul>
+          </aside>
         </section>
 
         <section>
@@ -193,6 +269,7 @@
                       type {
                         name
                         description
+                        kind
                       }
                     }
                   }
@@ -209,30 +286,62 @@
                     "queryType": {
                       "name": "Root",
                       "description": null,
-                      "fields": [
-                        {
-                          "name": "allFilms",
-                          "type": {
-                            "name": "FilmsConnection",
-                            "description": "A connection to a list of items."
-                          }
-                        },
                         {
                           "name": "film",
                           "type": {
                             "name": "Film",
-                            "description": "A single film."
+                            "description": "A single film.",
+                            "kind": "OBJECT"
                           }
-                        },
-                        {
-                          "name": "allPeople",
-                          "type": {
-                            "name": "PeopleConnection",
-                            "description": "A connection to a list of items."
-                          }
-                        },
+                        }
                       ]
                     }
+                  }
+                }
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim data-noescape>
+              query {
+                __type(name:"Film") {
+                  fields {
+                    name
+                    type {
+                      name
+                      description
+                    }
+                    description
+                  }
+                }
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim data-noescape>
+              {
+                "data": {
+                  "__type": {
+                    "fields": [
+                      {
+                        "name": "title",
+                        "description": "The title of this film.",
+                        "type": {
+                          "name": "String",
+                          "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text."
+                        }
+                      },
+                      {
+                        "name": "episodeID",
+                        "description": "The episode number of this film.",
+                        "type": {
+                          "name": "Int",
+                          "description": "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. "
+                        }
+                      },
+                    ]
                   }
                 }
               }
@@ -509,6 +618,34 @@
               }
             </code></pre>
           </section>
+
+          <section>
+            <pre><code data-trim>https://swapi.co/api/people/1/</code></pre>
+            <pre><code data-trim>https://swapi.co/api/people/2/</code></pre>
+            <pre><code data-trim>https://swapi.co/api/people/3/</code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              query {
+                luke: person(id:"cGVvcGxlOjE=") { name }
+                c3p0: person(id:"cGVvcGxlOjI=") { name }
+                r2d2: person(id:"cGVvcGxlOjM=") { name }
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              {
+                "data": {
+                  "luke": { "name": "Luke Skywalker" },
+                  "c3p0": { "name": "C-3PO" },
+                  "r2d2": { "name": "R2-D2" }
+                }
+              }
+            </code></pre>
+          </section>
         </section>
 
         <!--Timelyness-->
@@ -526,6 +663,7 @@
           <section>
             <h3>Timelyness - REST Sucks</h3>
             <img style="max-height: 75vh" src="img/gif-timelyness-rest.gif" />
+
             <aside class="notes">
               <ul>
                 <li>Polling, long of otherwise, DIY with websockets</li>
@@ -534,15 +672,11 @@
           </section>
 
           <section>
-            <pre><code data-trim>
-              POST https://service.api/my-stuff - 202
-              GET https://service.api/my-stuff - 404
-              GET https://service.api/my-stuff - 404
-              GET https://service.api/my-stuff - 404
-              GET https://service.api/my-stuff - 404
-              GET https://service.api/my-stuff - 404
-              GET https://service.api/my-stuff - 200 - Here it is
-            </code></pre>
+            <pre><code class="fragment">POST https://service.api/my-stuff - 202</code></pre>
+            <pre><code class="fragment">GET https://service.api/my-stuff - 404</code></pre>
+            <pre><code class="fragment">GET https://service.api/my-stuff - 404</code></pre>
+            <pre><code class="fragment">GET https://service.api/my-stuff - 404</code></pre>
+            <pre><code class="fragment">GET https://service.api/my-stuff - 200 - Here it is</code></pre>
           </section>
 
           <section>
@@ -561,6 +695,13 @@
                 update { type message }
               }
             </code></pre>
+
+            <aside class="notes">
+              <ul>
+                <li>Implemented over websockets</li>
+                <li>Part of the spec</li>
+              </ul>
+            </aside>
           </section>
         </section>
 
@@ -571,6 +712,7 @@
             <img width="50%" src="img/gif-updates.gif" />
             <aside class="notes">
               <ul>
+                <li>Shit changes</li>
                 <li>As your API changes, how does that get communicated to the user, how do you avoid breaking things</li>
               </ul>
             </aside>
@@ -616,19 +758,45 @@
           </section>
 
           <section>
-            <h2>GraphiQL / GraphQL Playground</h2>
+            <h2>GraphiQL</h2>
+            <img width="75%" src="img/graphiql.png" />
+          </section>
+
+          <section>
+            <h2>GraphQL Playground</h2>
+            <img width="75%" src="img/graphql-playground.png" />
           </section>
 
           <section>
             <h2>Plain HTTP/S Calls</h2>
+            <pre><code data-trim>
+              curl "https://graphql.github.io/swapi-graphql/?
+              query=query%20GetPlanet(%24id%3AID)%20%7B%0A%20%20
+              planet(id%3A%24id)%20%7B%0A%20%20%20%20name%0A%20
+              %20%20%20terrains%0A%20%20%7D%0A%7D&operationName
+              =GetPlanet&variables=%7B%20%22id%22%3A%20%22cGxhbm
+              V0czox%22%20%7D"
+            </code></pre>
           </section>
 
           <section>
             <h2>Relay</h2>
+            <ul>
+              <li>Used with React</li>
+              <li>Automatic batching</li>
+              <li>Automatic caching</li>
+            </ul>
           </section>
 
           <section>
             <h2>Apollo</h2>
+            <ul>
+              <li>Used with React primarily</li>
+              <li>Can be used indpendently</li>
+              <li>Has proprietry features with Apollo server</li>
+              <li>Automatic batching</li>
+              <li>Automatic caching</li>
+            </ul>
           </section>
         </section>
 
@@ -639,11 +807,56 @@
 
           <section>
             <h2>Node.js</h2>
+            <ul>
+              <li>Refrence implementation is GraphQL.js</li>
+              <li>Can build schemas declaratively or programatically</li>
+              <li>Easy to integrate</li>
+            </ul>
           </section>
 
           <section>
             <h2>Apollo</h2>
+            <ul>
+              <li>Mostly the same as GraphQL.js</li>
+              <li>Includes additional metrics</li>
+              <li>Includes additional tooling</li>
+              <li>Integrates with Apollo's management software</li>
+            </ul>
           </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>General Advice</h2>
+          </section>
+
+          <section>
+            <h3>Start Slow</h3>
+          </section>
+
+          <section>
+            <h3>Write Docs</h3>
+          </section>
+
+          <section>
+            <h3>Add, Don't Change</h3>
+          </section>
+
+          <section>
+            <h3>Think in Graphs</h3>
+          </section>
+        </section>
+
+        <section>
+          <h2>Thanks!</h2>
+
+          <a href="https://twitter.com/rtward"><i class="fab fa-twitter-square"></i> @rtward</a>
+          <br />
+          <a href="https://github.com/rtward"><i class="fab fa-github-square"></i> github.com/rtward</a>
+          <br />
+          <a href="https://github.com/rtward/GraphQL-Talk">github.com/rtward/GraphQL-Talk</a>
+          <br />
+          <a href="https://github.com/chentsulin/awesome-graphql#databases">github.com/chentsulin/awesome-graphql</a>
         </section>
       </div>
     </div>
