@@ -114,6 +114,14 @@
               <li class="fragment">Transport independent</li>
               <li class="fragment">Most commonly used over HTTP/S</li>
             </ul>
+
+            <aside class="notes">
+              <ul>
+                <li>Who's every used an API?</li>
+                <li>REST means plain HTTP calls in this talk</li>
+                <li>A system for asking a remote system for some resource and getting a response</li>
+              </ul>
+            </aside>
           </section>
  
           <section>
@@ -138,6 +146,7 @@
                 <li>Sometimes, fields will accept arguments</li>
                 <li>If a field is an object, then you will need to specify the sub fields</li>
                 <li>If you need to request the same field different times, you can make custom lbels</li>
+                <li>GraphQL has a lot of other features, directives for include / exclude</li>
               </ul>
             </aside>
           </section>
@@ -380,6 +389,38 @@
           </section>
 
           <section>
+            <pre><code data-trim>
+              https://swapi.co/api/vehicles/4/
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              {
+                  "name": "Sand Crawler", 
+                  "model": "Digger Crawler", 
+                  "manufacturer": "Corellia Mining Corporation", 
+                  "cost_in_credits": "150000", 
+                  "length": "36.8", 
+                  "max_atmosphering_speed": "30", 
+                  "crew": "46", 
+                  "passengers": "30", 
+                  "cargo_capacity": "50000", 
+                  "consumables": "2 months", 
+                  "vehicle_class": "wheeled", 
+                  "pilots": [], 
+                  "films": [
+                      "https://swapi.co/api/films/5/", 
+                      "https://swapi.co/api/films/1/"
+                  ], 
+                  "created": "2014-12-10T15:36:25.724000Z", 
+                  "edited": "2014-12-22T18:21:15.523587Z", 
+                  "url": "https://swapi.co/api/vehicles/4/"
+              }
+            </code></pre>
+          </section>
+
+          <section>
             <h3>Predictability - GraphQL is Better</h3>
             <img style="max-height: 75vh" src="img/meme-graphql-predictable.jpg" />
             <aside class="notes">
@@ -437,6 +478,20 @@
                 <li>No information on what exectly caused the error, unless the developer added it</li>
               </ul>
             </aside>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              https://swapi.co/api/vehicles/1/
+            </code></pre>
+            <pre><code data-trim>
+              HTTP 404 NOT FOUND
+              Content-Type: application/json
+              Vary: Accept
+              Allow: GET, HEAD, OPTIONS
+
+              { "detail": "Not found" }
+            </code></pre>
           </section>
 
           <section>
@@ -550,10 +605,8 @@
 
           <section>
             <pre><code data-trim>
-              <code data-trim data-noescape>
                 https://swapi.co/api/people/1/
-              </code>
-            </pre></code>
+            </code></pre>
           </section>
 
           <section>
@@ -651,6 +704,11 @@
                 }
               }
             </code></pre>
+
+            <aside class="notes">
+              <ul>
+                <li>GraphQL also supports "if" statements in queries to further narrow down data</li>
+            </aside>
           </section>
         </section>
 
@@ -833,6 +891,164 @@
 
         <section>
           <section>
+            <h2>Example</h2>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              import {
+                graphql, GraphQLSchema, GraphQLObjectType, GraphQLString
+              } from 'graphql';
+
+              var schema = new GraphQLSchema({
+                query: new GraphQLObjectType({
+                  name: 'RootQueryType',
+                  fields: {
+                    hello: {
+                      type: GraphQLString,
+                      description: "Guess what it is!",
+                      resolve() { return 'world'; }
+                    }
+                  }
+                })
+              });
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              var app = express();
+              app.use('/graphql', graphqlHTTP({ schema: schema }));
+              app.listen(4000);
+            </code></pre>
+          </section>
+
+          <section>
+            <pre>POST - https://data.api/graphql</pre>
+            <pre><code data-trim>
+              { "query": "query { hello }" }
+            </code></pre>
+            <pre><code data-trim>
+              { "data": { "hello": "world" } }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              const testing = new GraphQLObjectType({
+                name: 'TestingType',
+                fields: {
+                  sequence: {
+                    type: new GraphQLList(GraphQLInt),
+                    description: "Prints out some numbers",
+                    args: {
+                      howMany: { type: new GaphQLNonNull(GraphQLInt) },
+                    },
+                    resolve(parent, args) {
+                      return Array(args.howMany)
+                    }
+                  }
+                }
+              });
+            </code></pre>
+          </section>
+
+          <section>
+            <pre>POST - https://data.api/graphql</pre>
+            <pre><code data-trim>
+              { "query": "query { testing { sequence(howMany:5) } }" }
+            </code></pre>
+            <pre><code data-trim>
+              { "data": { "testing": [0, 1, 2, 3, 4] } }
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Security Implications</h2>
+          </section>
+
+          <section>
+            <h2>Authentication / Authorization</h2>
+
+            <aside>
+              <ul>
+                <li>No standard</li>
+                <li>Use normal HTTP auth methods</li>
+                <li>Can also authenticate feilds / values</li>
+              </ul>
+          </section>
+
+          <section>
+            <h2>Resolvers</h2>
+
+            <aside>
+              <ul>
+                <li>Auth can be at the field level</li>
+                <li>Sometimes things aren't always resolved correctly</li>
+                <li>Lets see a very contrived example</li>
+              </ul>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              query {
+                user(id: 5) { name email }
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              {
+                "data": { "user": { "name": "Alice", "email": null }
+                "errors": [
+                  {
+                    "path": ["user", "email"],
+                    "message": "You do not have permission to view that user's email"
+                  }
+                ]
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              query {
+                messages {
+                  from { name email }
+                  to { name email }
+                  message
+                }
+              }
+            </code></pre>
+          </section>
+
+          <section>
+            <pre><code data-trim>
+              {
+                "data": {
+                  "messages": [
+                    {
+                      "message": "Yo",
+                      "from": {
+                        "name": "Alice",
+                        "email": "alice@secret.com"
+                      },
+                      "to": {
+                        "name": "Bob",
+                        "email": "bob@secret.com"
+                      },
+                  ]
+                }
+              }
+            </code></pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
             <h2>General Advice</h2>
           </section>
 
@@ -855,6 +1071,9 @@
 
         <section>
           <h2>Thanks!</h2>
+
+          <p>Special thanks to Joe Cathell and my wife Kim for helping me prep this talk</p>
+          <p>If you have feedback, please let me know!</p>
 
           <a href="https://twitter.com/rtward"><i class="fab fa-twitter-square"></i> @rtward</a>
           <br />
